@@ -1,6 +1,6 @@
 ﻿import { ConvexAuthProvider } from '@convex-dev/auth/react';
 import { useAction, useConvexAuth, useQuery } from 'convex/react';
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider, router, useRootNavigationState } from 'expo-router';
+import { DarkTheme, DefaultTheme, type Href, Stack, ThemeProvider, router, useRootNavigationState } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
@@ -23,6 +23,8 @@ import { useEntitlement } from '@/hooks/use-entitlement';
 import { connectPurchases, purchasesEnabled } from '@/lib/purchases';
 import { authStorage, convex } from '@/lib/convex';
 import { api } from '../../convex/_generated/api';
+import { askFirstRunPermissions } from '@/lib/first-run-permissions';
+import { loadReminders, onScansChanged, useReminderTaps } from '@/lib/reminders';
 import { loadThemePreference } from '@/lib/theme-preference';
 
 SplashScreen.preventAutoHideAsync();
@@ -57,7 +59,7 @@ let paywallShown = false;
 
 function Gate({ background }: { background: string }) {
   const { isLoading, isAuthenticated } = useConvexAuth();
-  const { loading, isPro } = useEntitlement();
+  const { loading, isPro, scansLeft } = useEntitlement();
   const navReady = !!useRootNavigationState()?.key;
   const me = useQuery(api.scans.me);
   const sync = useAction(api.subscription.sync);
@@ -69,6 +71,16 @@ function Gate({ background }: { background: string }) {
       .then(() => sync())
       .catch(() => {});
   }, [me?._id, sync]);
+
+  useEffect(() => {
+    if (isAuthenticated) askFirstRunPermissions();
+  }, [isAuthenticated]);
+
+  // Milestone and offer reminders follow the scan count and the plan.
+  const scans = useQuery(api.scans.list, isAuthenticated ? {} : 'skip');
+  useEffect(() => {
+    if (scans !== undefined && !loading) onScansChanged(scans.length, { isPro, scansLeft });
+  }, [scans, loading, isPro, scansLeft]);
 
   useEffect(() => {
     if (paywallShown || !navReady || loading || !isAuthenticated || isPro) return;
@@ -96,6 +108,8 @@ function Gate({ background }: { background: string }) {
   );
 }
 
+const openRoute = (route: string) => router.push(route as Href);
+
 export default function RootLayout() {
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const background = Colors[scheme].background;
@@ -114,7 +128,11 @@ export default function RootLayout() {
 
   useEffect(() => {
     loadThemePreference();
+    loadReminders();
   }, []);
+
+  // Tapping a reminder opens the screen it points at.
+  useReminderTaps(openRoute);
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(background);

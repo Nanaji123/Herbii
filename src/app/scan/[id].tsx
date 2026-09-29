@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from 'convex/react';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 
 import { useDialog } from '@/components/dialog';
@@ -9,6 +10,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { findHerbByScientificName } from '@/lib/herbs';
+import { scheduleRecentHerbReminder } from '@/lib/reminders';
 import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
 
@@ -18,6 +20,12 @@ export default function ScanDetail() {
   const scan = useQuery(api.scans.get, { id: id as Id<'scans'> });
   const remove = useMutation(api.scans.remove);
   const dialog = useDialog();
+
+  // A scan that was just made (not one reopened from history) queues a "remember this herb?" nudge.
+  useEffect(() => {
+    if (!scan?.identified || Date.now() - scan._creationTime > 2 * 60 * 1000) return;
+    scheduleRecentHerbReminder(scan.commonName, scan._id);
+  }, [scan]);
 
   async function confirmDelete() {
     const ok = await dialog.confirm({

@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDialog } from '@/components/dialog';
@@ -18,6 +18,7 @@ import { BottomTabInset, Lime, MaxContentWidth, Spacing, VerdictColors } from '@
 import { useScans } from '@/hooks/use-scans';
 import { useEntitlement } from '@/hooks/use-entitlement';
 import { useTheme } from '@/hooks/use-theme';
+import { remindersSupported, sendTestReminder, setRemindersEnabled, useRemindersEnabled } from '@/lib/reminders';
 import { type ThemePreference, setThemePreference, useThemePreference } from '@/lib/theme-preference';
 import { api } from '../../../convex/_generated/api';
 
@@ -131,6 +132,52 @@ function AppearanceCard() {
           );
         })}
       </View>
+    </Glass>
+  );
+}
+
+function RemindersCard() {
+  const theme = useTheme();
+  const on = useRemindersEnabled();
+  const dialog = useDialog();
+
+  async function toggle() {
+    const ok = await setRemindersEnabled(!on);
+    if (!ok) {
+      dialog.alert({
+        title: 'Notifications are off',
+        message: 'Allow notifications for Herbii in your phone settings to get reminders.',
+        tone: 'warning',
+        confirmLabel: 'OK',
+      });
+    }
+  }
+
+  return (
+    <Glass radius={28} style={{ padding: Spacing.three, gap: Spacing.three }}>
+      <View style={styles.appearHead}>
+        <View style={[styles.rowIcon, { backgroundColor: theme.brandSoft }]}>
+          <Icon name="notifications-outline" size={19} color={theme.accent} />
+        </View>
+        <View style={{ flex: 1, gap: 1 }}>
+          <ThemedText style={{ fontWeight: '700', fontSize: 15.5 }}>Reminders</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary" style={{ fontSize: 12.5 }}>
+            Milestones, offers and a nudge if you have been away
+          </ThemedText>
+        </View>
+        <Switch
+          value={on}
+          onValueChange={toggle}
+          trackColor={{ true: theme.primary }}
+          accessibilityLabel="Reminders"
+        />
+      </View>
+      {on && (
+        <PressableScale onPress={sendTestReminder} accessibilityRole="button" style={[styles.segItem, { backgroundColor: theme.backgroundSelected }]}>
+          <Icon name="paper-plane-outline" size={16} color={theme.accent} />
+          <ThemedText type="smallBold">Send a test reminder</ThemedText>
+        </PressableScale>
+      )}
     </Glass>
   );
 }
@@ -307,6 +354,7 @@ export default function ProfileScreen() {
 
           <SectionLabel>Preferences</SectionLabel>
           <AppearanceCard />
+          {remindersSupported && <RemindersCard />}
 
           <SectionLabel>Your data</SectionLabel>
           <Glass radius={28}>
