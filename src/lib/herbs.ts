@@ -47,7 +47,7 @@ const IMAGES: Record<string, ImageSourcePropType> = {
   "ashwagandha": require('../../assets/herbs/ashwagandha.jpg'),
   "aloe-vera": require('../../assets/herbs/aloe-vera.jpg'),
   "peppermint": require('../../assets/herbs/peppermint.jpg'),
-  "ginger": require('../../assets/herbs/ginger-showcase.png'),
+  "ginger": require('../../assets/herbs/ginger-showcase.jpg'),
   "neem": require('../../assets/herbs/neem.jpg'),
   "chamomile": require('../../assets/herbs/chamomile.jpg'),
   "lavender": require('../../assets/herbs/lavender.jpg'),
