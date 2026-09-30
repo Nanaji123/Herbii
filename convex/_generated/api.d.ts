@@ -10,6 +10,8 @@
 
 import type * as account from "../account.js";
 import type * as auth from "../auth.js";
+import type * as deletionRequests from "../deletionRequests.js";
+import type * as deviceUsage from "../deviceUsage.js";
 import type * as http from "../http.js";
 import type * as identify from "../identify.js";
 import type * as plans from "../plans.js";
@@ -27,6 +29,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   account: typeof account;
   auth: typeof auth;
+  deletionRequests: typeof deletionRequests;
+  deviceUsage: typeof deviceUsage;
   http: typeof http;
   identify: typeof identify;
   plans: typeof plans;

@@ -15,7 +15,7 @@ export const PRIVACY_SECTIONS: PolicySection[] = [
     title: "What we collect",
     body: ["We only collect what the app needs to work:"],
     bullets: [
-      "Account details from Google sign-in: your name, email address and profile picture.",
+      "A device identifier that links your account to your phone. It is stored only as a one-way hash, and we do not ask for your name or email address.",
       "Photos you take or choose to identify a plant, and the result of each scan (plant name, safety notes and so on). Together these are your scan history.",
       "Your plan and usage: which plan you have, when it ends, and how many free scans you have used.",
       "Purchase information handled by Google Play or the App Store and RevenueCat (our subscription provider). We never see your card or payment details.",
@@ -37,7 +37,6 @@ export const PRIVACY_SECTIONS: PolicySection[] = [
     bullets: [
       "Convex: stores your account, scans, photos and plan.",
       "OpenAI: your scan photo is sent to be analysed so we can identify the plant.",
-      "Google: sign-in.",
       "RevenueCat, Google Play and the Apple App Store: subscriptions and purchases.",
     ],
   },
@@ -46,7 +45,7 @@ export const PRIVACY_SECTIONS: PolicySection[] = [
     body: ["You are in control of your data:"],
     bullets: [
       "Delete any single scan, or your whole history, from the Profile tab.",
-      "Delete your account from Profile > Delete account. This permanently removes your profile, scans, photos and plan record from our systems.",
+      "Delete your account from Profile > Delete account. This permanently removes your profile, scans, photos and plan record from our systems. To stop the free scans being reset by deleting and re-creating an account, we keep only a one-way hash of your device identifier and the number of free scans it has used.",
       "Cancel a subscription at any time in your Google Play or App Store subscription settings. Deleting your account does not cancel it automatically.",
       "Camera and photo access can be turned off any time in your phone's Settings.",
     ],

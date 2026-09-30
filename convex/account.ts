@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation } from "./_generated/server";
+import { rememberDeviceUsage } from "./deviceUsage";
 
 /** Permanently deletes the signed-in user and everything tied to them (required by the app stores). */
 export const deleteAccount = mutation({
@@ -16,6 +17,13 @@ export const deleteAccount = mutation({
       await ctx.storage.delete(s.imageId);
       await ctx.db.delete(s._id);
     }
+
+    // Free scans stay with the phone, so deleting the account does not hand out a fresh set.
+    const usage = await ctx.db
+      .query("usage")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .unique();
+    await rememberDeviceUsage(ctx, userId, usage?.scans ?? 0);
 
     for (const table of ["subscriptions", "usage"] as const) {
       const rows = await ctx.db

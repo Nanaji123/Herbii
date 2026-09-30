@@ -18,7 +18,7 @@ import { BottomTabInset, Lime, MaxContentWidth, Spacing, VerdictColors } from '@
 import { useScans } from '@/hooks/use-scans';
 import { useEntitlement } from '@/hooks/use-entitlement';
 import { useTheme } from '@/hooks/use-theme';
-import { remindersSupported, sendTestReminder, setRemindersEnabled, useRemindersEnabled } from '@/lib/reminders';
+import { remindersSupported, setRemindersEnabled, useRemindersEnabled } from '@/lib/reminders';
 import { type ThemePreference, setThemePreference, useThemePreference } from '@/lib/theme-preference';
 import { api } from '../../../convex/_generated/api';
 
@@ -172,12 +172,6 @@ function RemindersCard() {
           accessibilityLabel="Reminders"
         />
       </View>
-      {on && (
-        <PressableScale onPress={sendTestReminder} accessibilityRole="button" style={[styles.segItem, { backgroundColor: theme.backgroundSelected }]}>
-          <Icon name="paper-plane-outline" size={16} color={theme.accent} />
-          <ThemedText type="smallBold">Send a test reminder</ThemedText>
-        </PressableScale>
-      )}
     </Glass>
   );
 }
@@ -249,7 +243,7 @@ export default function ProfileScreen() {
   async function confirmSignOut() {
     const ok = await dialog.confirm({
       title: 'Sign out?',
-      message: 'You can sign back in with Google any time.',
+      message: 'Your scans and plan stay with this phone. Tap Get started to open them again.',
       confirmLabel: 'Sign out',
       icon: 'log-out-outline',
       tone: 'warning',
@@ -331,8 +325,8 @@ export default function ProfileScreen() {
 
             <View style={styles.badges}>
               <View style={styles.badge}>
-                <Icon name="logo-google" size={13} color="#fff" />
-                <ThemedText style={styles.badgeText}>Google account</ThemedText>
+                <Icon name="phone-portrait-outline" size={13} color="#fff" />
+                <ThemedText style={styles.badgeText}>This device</ThemedText>
               </View>
               {memberSince ? (
                 <View style={styles.badge}>

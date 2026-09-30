@@ -251,15 +251,6 @@ export async function onScansChanged(count: number, plan: { isPro: boolean; scan
   }
 }
 
-/** Fires a sample reminder a few seconds from now so the user can see what they look like. */
-export async function sendTestReminder() {
-  if (!supported) return;
-  await Notifications.scheduleNotificationAsync({
-    content: { ...COMEBACK[0].pro, data: { route: '/scan' } },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5, channelId: CHANNEL },
-  });
-}
-
 /** Opens the screen a tapped reminder points at, including when the tap launched the app. */
 export function useReminderTaps(open: (route: string) => void) {
   useEffect(() => {

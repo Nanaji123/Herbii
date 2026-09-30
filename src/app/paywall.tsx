@@ -45,8 +45,18 @@ export default function PaywallScreen() {
   const [packages, setPackages] = useState<Partial<Record<PlanId, PurchasesPackage>>>({});
 
   useEffect(() => {
-    if (!purchasesEnabled) return;
-    loadPackages().then(setPackages).catch(() => {});
+    if (!purchasesEnabled) {
+      console.warn('[plans] RevenueCat is off: EXPO_PUBLIC_REVENUECAT_ANDROID_KEY is not set in this bundle.');
+      return;
+    }
+    loadPackages()
+      .then((found) => {
+        if (Object.keys(found).length === 0) {
+          console.warn('[plans] RevenueCat returned no weekly/monthly/annual packages in the current offering.');
+        }
+        setPackages(found);
+      })
+      .catch((e) => console.warn('[plans] Could not load prices from RevenueCat:', e));
   }, []);
 
   // Prices come from the store (already in the user's currency); PLANS is only the fallback.

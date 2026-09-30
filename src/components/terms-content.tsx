@@ -50,8 +50,8 @@ const SECTIONS: Section[] = [
     icon: 'person-circle-outline',
     title: 'Your account',
     body: [
-      'You sign in with Google. We receive your name, email address and profile picture from Google to create and identify your account.',
-      'You are responsible for activity on your account. Sign out on shared devices.',
+      'Herbii does not ask you to create an account. Your account is linked to your device, so the same phone always opens the same scan history and plan. We do not collect your name or email address.',
+      'You are responsible for activity on your device. If you lose it or want a fresh start, use Delete account in Profile. Your free scans stay counted for the device, so deleting your account does not give you a new set.',
     ],
   },
   {
@@ -68,7 +68,7 @@ const SECTIONS: Section[] = [
     title: 'Privacy and your data',
     body: ['What we collect and why:'],
     bullets: [
-      'Google profile details (name, email, picture) to run your account.',
+      'A device identifier (stored only as a one-way hash) to link your account to your phone.',
       'Scan photos and results to show your history.',
       'Basic technical data needed to keep the service working.',
       'We do not sell your personal data.',
@@ -78,7 +78,7 @@ const SECTIONS: Section[] = [
     icon: 'server-outline',
     title: 'Services we rely on',
     body: [
-      'To provide Herbii we use trusted third-party services: Google (sign-in), Convex (database, file storage and back end) and OpenAI (analysing scan photos). Your data is handled by them under their own terms and privacy policies.',
+      'To provide Herbii we use trusted third-party services: Convex (database, file storage and back end) and OpenAI (analysing scan photos). Your data is handled by them under their own terms and privacy policies.',
       'A photo you scan is sent to the AI provider only to produce your result.',
     ],
   },
