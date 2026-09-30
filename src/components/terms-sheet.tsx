@@ -1,5 +1,6 @@
 import { Modal, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaView } from '@/components/safe-area';
 
 import { GlassButton } from '@/components/glass-button';
 import { Screen } from '@/components/screen';

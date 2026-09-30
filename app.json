@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Herbii - Herb Identifier & Helper",
+    "name": "Herbii: Herb Identifier",
     "slug": "HerbiiIdentifier",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,14 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "com.herbii.identifier"
+      "bundleIdentifier": "com.herbii.identifier",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "CFBundleDisplayName": "Herbii"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -41,7 +48,12 @@
           "imageWidth": 200
         }
       ],
-      "expo-secure-store",
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": false
+        }
+      ],
       [
         "expo-notifications",
         {
@@ -53,14 +65,25 @@
         "expo-image-picker",
         {
           "cameraPermission": "Herbii uses the camera to photograph plants so they can be identified.",
-          "photosPermission": "Herbii lets you pick plant photos to identify."
+          "photosPermission": "Herbii lets you pick plant photos to identify.",
+          "microphonePermission": false
         }
       ],
       [
         "expo-camera",
         {
           "cameraPermission": "Herbii uses the camera to scan plants so they can be identified.",
-          "recordAudioAndroid": false
+          "recordAudioAndroid": false,
+          "microphonePermission": false
+        }
+      ],
+      "expo-apple-authentication",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "enableSceneSupport": true
+          }
         }
       ]
     ],

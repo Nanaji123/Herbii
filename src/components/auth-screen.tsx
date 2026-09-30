@@ -1,11 +1,12 @@
 import { useAuthActions } from '@convex-dev/auth/react';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from '@/components/safe-area';
 
 import { useDialog } from '@/components/dialog';
 import { Glass } from '@/components/glass';
@@ -28,11 +29,45 @@ const FEATURES: { icon: IconName; label: string }[] = [
 export function AuthScreen() {
   const { signIn } = useAuthActions();
   const dialog = useDialog();
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState<'apple' | 'google' | null>(null);
   const [termsOpen, setTermsOpen] = useState(false);
+  // False in Expo Go (no native module there); true in real iOS builds.
+  const [appleAvailable, setAppleAvailable] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') AppleAuthentication.isAvailableAsync().then(setAppleAvailable).catch(() => {});
+  }, []);
+  function showError(e: unknown) {
+    dialog.alert({
+      title: 'Sign-in failed',
+      message: e instanceof Error ? e.message : 'Please try again.',
+      tone: 'warning',
+      confirmLabel: 'Try again',
+    });
+  }
+
+  async function continueWithApple() {
+    setBusy('apple');
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      if (!credential.identityToken) throw new Error('Apple did not return a sign-in token.');
+      // Apple only sends the name the first time someone signs in to this app.
+      const name = [credential.fullName?.givenName, credential.fullName?.familyName].filter(Boolean).join(' ');
+      await signIn('apple', { identityToken: credential.identityToken, ...(name && { name }) });
+    } catch (e) {
+      if ((e as { code?: string }).code !== 'ERR_REQUEST_CANCELED') showError(e);
+    } finally {
+      setBusy(null);
+    }
+  }
 
   async function continueWithGoogle() {
-    setBusy(true);
+    setBusy('google');
     try {
       const redirectTo = Linking.createURL('/');
       const { redirect } = await signIn('google', { redirectTo });
@@ -44,14 +79,9 @@ export function AuthScreen() {
         if (code) await signIn('google', { code });
       }
     } catch (e) {
-      dialog.alert({
-        title: 'Sign-in failed',
-        message: e instanceof Error ? e.message : 'Please try again.',
-        tone: 'warning',
-        confirmLabel: 'Try again',
-      });
+      showError(e);
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   }
 
@@ -92,8 +122,17 @@ export function AuthScreen() {
           ))}
         </View>
 
-        <PressableScale onPress={continueWithGoogle} disabled={busy} style={styles.button}>
-          {busy ? (
+        {appleAvailable && (
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
+            cornerRadius={32}
+            onPress={busy !== null ? () => {} : continueWithApple}
+            style={styles.appleButton}
+          />
+        )}
+        <PressableScale onPress={continueWithGoogle} disabled={busy !== null} style={styles.button}>
+          {busy === 'google' ? (
             <ActivityIndicator color="#0E2216" />
           ) : (
             <View style={styles.buttonRow}>
@@ -136,6 +175,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.25)',
   },
   button: { backgroundColor: '#fff', borderRadius: 32, paddingVertical: Spacing.three + 4, alignItems: 'center', marginTop: Spacing.two },
+  appleButton: { height: 62, marginTop: Spacing.two },
   buttonRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   buttonText: { color: '#0E2216', fontWeight: '800', fontSize: 17 },
   legal: { color: 'rgba(255,255,255,0.6)', textAlign: 'center', lineHeight: 19 },

@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import type { PurchasesPackage } from 'react-native-purchases';
 import { ActivityIndicator, Linking, Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from '@/components/safe-area';
 
 import { useDialog } from '@/components/dialog';
 import { Icon, type IconName } from '@/components/icon';

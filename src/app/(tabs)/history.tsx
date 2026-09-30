@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from '@/components/safe-area';
 
 import { Glass } from '@/components/glass';
 import { HERB_CARD_HEIGHTS, HerbCard } from '@/components/herb-card';
@@ -314,7 +314,8 @@ const styles = StyleSheet.create({
   filterEmpty: { alignItems: 'center', gap: Spacing.two, paddingTop: Spacing.five },
   empty: { alignItems: 'center', gap: Spacing.two + 2, paddingTop: Spacing.six, paddingHorizontal: Spacing.four },
   emptyIcon: { width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.two },
-  explore: { alignSelf: 'stretch', gap: Spacing.two + 2, marginTop: Spacing.four },
+  // Cancel the empty state's side padding so the cards match the Herbs tab width.
+  explore: { alignSelf: 'stretch', marginHorizontal: -Spacing.four, gap: Spacing.two + 2, marginTop: Spacing.four },
   exploreHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   masonry: { flexDirection: 'row', gap: Spacing.three, alignItems: 'flex-start' },
   col: { flex: 1, gap: Spacing.three },
